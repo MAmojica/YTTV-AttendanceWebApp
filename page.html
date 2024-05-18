@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Tracker</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function displayCurrentDate() {
+            google.script.run.withSuccessHandler(function (serverTime) {
+                var currentDateElement = document.getElementById('currentDate');
+                currentDateElement.value = new Date(serverTime).toLocaleDateString();
+            }).getCurrentTime();
+        }
+
+        window.addEventListener('load', function () {
+          displayCurrentDate();
+          // Fetch user email or use your mechanism to get the user's email
+          google.script.run.withSuccessHandler(function(userEmail) {
+            // Fetch user information from the allowlist
+            google.script.run.withSuccessHandler(function(userInfo) {
+              if (userInfo) {
+                // Populate Full Name and Cognizant EID fields
+                document.getElementById('full_name').value = userInfo.fullName;
+                document.getElementById('CognizantEID').value = userInfo.cognizantEID;
+                document.getElementById('waveInfo').value = userInfo.wave;
+                document.getElementById('towerInfo').value = userInfo.tower;
+              }
+            }).getUserInfo(userEmail);
+          }).getUserEmail();
+        });
+
+        function clockInOrOut(status) {
+          // Fetch user email or use your mechanism to get the user's email
+          google.script.run.withSuccessHandler(function (userEmail) {
+            // Fetch user information from the allowlist
+            google.script.run.withSuccessHandler(function (userInfo) {
+              if (userInfo) {
+                // Collect data
+                var fullName = document.getElementById('full_name').value;
+                var cognizantEID = document.getElementById('CognizantEID').value;
+                var wave = document.getElementById('waveInfo').value;
+                var tower = document.getElementById('towerInfo').value;
+                var screenshot = document.getElementById('screenshot').value;
+                var shiftDate = document.getElementById('shift_date').value;
+
+                // Validate inputs
+                if (!fullName || !cognizantEID || !wave || !tower || !screenshot || !shiftDate) {
+                  // Display SweetAlert error message for missing information
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Fill up all the required information.',
+                  });
+                  return;  // Stop execution if validation fails
+                }
+
+                // Call the server-side getCurrentTime function to get the current date
+                google.script.run.withSuccessHandler(function (serverTime) {
+                  var currentDate = new Date(serverTime).toLocaleDateString();
+                  var formattedShiftDate = new Date(shiftDate).toLocaleDateString();
+
+                  // Call the server-side getManilaTimestamp function to get the Manila timestamp
+                  google.script.run.withSuccessHandler(function (manilaTimestamp) {
+                    // Create an array with the data
+                    var data = [currentDate, formattedShiftDate, userEmail, fullName, cognizantEID, wave, tower, screenshot, status, manilaTimestamp];
+
+                    // Call the server-side exportData function
+                    google.script.run.exportData(data);
+
+                    // Display SweetAlert success message based on status
+                    var successMessage = (status === 'Clock-in') ? 'Clock-in successful!' : 'Clock-out successful!';
+                    Swal.fire({
+                      icon: 'success',
+                      title: 'Success!',
+                      text: successMessage,
+                    });
+                  }).getManilaTimestamp();
+                }).getCurrentTime();
+              }
+            }).getUserInfo(userEmail);
+          }).getUserEmail();
+        }
+
+    </script>
+</head>
+
+<body>
+    <input type="hidden" id="fullName" value="" />
+    <input type="hidden" id="cognizantEID" value="" />
+    <input type="hidden" id="tower" value="" />
+    <input type="hidden" id="wave" value="" />
+    <input type="hidden" id="userEmail" value="">
+    <input type="hidden" id="currentDate" value="">
+    <input type="hidden" id="manilaTimestamp" value="">
+
+    <div class="min-h-screen p-6 bg-gray-100 flex items-center justify-center">
+        <div class="container max-w-screen-lg mx-auto">
+            <div>
+              
+                <div class="bg-white rounded shadow-lg p-4 px-4 md:p-8 mb-6">
+                  <div class="grid gap-4 gap-y-2 text-sm grid-cols-1 lg:grid-cols-3">
+                    <div class="text-gray-600">
+                      <p class="font-medium text-lg">Attendance Tracker</p>
+                      <p>YTTV Training Team</p>
+                    </div>
+                        
+                        <div class="lg:col-span-2">
+                            <div class="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
+                                <div class="md:col-span-5">
+                                    <label for="full_name">Full Name</label>
+                                    <input type="text" name="full_name" id="full_name"
+                                        class="h-10 border mt-1 rounded px-4 w-full bg-gray-50" value="" maxlength="0"/>
+                                </div>
+
+                                <div class="md:col-span-1">
+                                    <label for="CognizantEID">Cognizant EID</label>
+                                    <input type="input" name="CognizantEID" id="CognizantEID"
+                                        class="transition-all flex items-center h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                                        placeholder="" value="" maxlength="0"/>
+                                </div>
+
+                                <div class="md:col-span-2">
+                                    <label for="waveInfo">Wave</label>
+                                    <input type="input" name="waveInfo" id="waveInfo"
+                                        class="h-10 pl-2 pr-8 border mt-1 rounded w-full bg-gray-50" placeholder="" value="" maxlength="0"/>
+                                </div>
+
+                                <div class="md:col-span-3">
+                                    <label for="towerInfo">Tower</label>
+                                    <input type="input" name="towerInfo" id="towerInfo"
+                                        class="h-10 pl-2 pr-8 border mt-1 rounded w-full bg-gray-50" placeholder="" value="" maxlength="0"/>
+                                </div>
+
+                                <div class="md:col-span-5">
+                                    <label for="screenshot">T&L Screenshot</label>
+                                    <input type="screenshot" name="screenshot" id="screenshot"
+                                        class="h-10 border mt-1 rounded px-4 w-full bg-gray-50" value="" />
+                                </div>
+
+                                <div class="md:col-span-5">
+                                    <label for="shift_date">Shift Date</label>
+                                    <input type="date" name="shift_date" id="shift_date"
+                                        class="h-10 border mt-1 rounded px-4 w-full bg-gray-50" />
+                                </div>
+
+                                <div class="md:col-span-5 text-right">
+                                    <div class="inline-flex items-end">
+                                        <button id="clockInBtn"
+                                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
+                                            onclick="clockInOrOut('Clock-in')">Clock-in</button>
+                                        <button id="clockOutBtn"
+                                            class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
+                                            onclick="clockInOrOut('Clock-out')">Clock-out</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
