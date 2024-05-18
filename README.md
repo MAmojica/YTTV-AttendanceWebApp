@@ -14,7 +14,8 @@ This project contains a script and HTML form that creates a simple attendance tr
 <br />
 
 <p align="center">
-<img src="https://imgur.com/a/HR9zMct" height="65%" width="65%" alt="Youtube TV Training Team - Attendance Web App"/>
+<img src="[https://imgur.com/a/HR9zMct](https://github.com/MAmojica/YTTV-AttendanceWebApp/assets/78264218/0da175d1-0b98-4ef9-844d-9df4de20dbe1)" height="65%" width="65%" alt="Youtube TV Training Team - Attendance Web App"/>
+
 </p>
 <h2>Languages and tools Used</h2>
 
