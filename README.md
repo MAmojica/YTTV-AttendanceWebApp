@@ -1,13 +1,5 @@
 <h1>Youtube TV Training Team - Attendance Web App</h1>
 
-
- ### [Project Demonstration](https://youtu.be/7eJexJVCqJo)
-
-<h2>
- 
- 
- </h2>
-
 <h2>Description</h2>
 This project contains a script and HTML form that creates a simple attendance tracking system where new-hires or trainees can clock in and out. The system collects the user's email, fetches their information from a predefined allowlist, records the current date and Manila timestamp, and appends this data to a Google Spreadsheet. The web interface is styled using Tailwind CSS and provides user feedback with SweetAlert2 popups.
 <br />
